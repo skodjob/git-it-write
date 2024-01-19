@@ -291,19 +291,22 @@ class GIW_Publisher{
                 $item_slug_clean = sanitize_title( $item_slug );
 
                 if( array_key_exists( $item_slug_clean, $existing_posts ) ){
+                    GIW_Utils::log( 'Directory already in existing posts' );
                     $directory_post = $existing_posts[ $item_slug_clean ][ 'id' ];
 
                     $index_props = array_key_exists( 'index', $item_props[ 'items' ] ) ? $item_props[ 'items' ][ 'index' ] : false;
-                    $this->create_post( $directory_post, $item_slug, $index_props, $parent );
+//                    $this->create_post( $directory_post, $item_slug, $index_props, $parent );
 
                 }else{
                     
                     // If index posts exists for the directory
                     if( array_key_exists( 'index', $item_props[ 'items' ] ) ){
+                        GIW_Utils::log( 'Directory not in Existing posts and with index' );
                         $index_props = $item_props[ 'items' ][ 'index' ];
-                        $directory_post = $this->create_post( 0, $item_slug, $index_props, $parent );
+//                        $directory_post = $this->create_post( 0, $item_slug, $index_props, $parent );
                     }else{
-                        $directory_post = $this->create_post( 0, $item_slug, false, $parent );
+                        GIW_Utils::log( 'Directory not in Existing posts and without index' );
+//                        $directory_post = $this->create_post( 0, $item_slug, false, $parent );
                     }
 
                 }
