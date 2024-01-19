@@ -98,7 +98,6 @@ class GIW_Publisher{
     }
 
     public function create_post( $post_id, $item_slug, $item_props, $parent ){
-
         GIW_Utils::log( sprintf( '---------- Checking post [%s] under parent [%s] ----------', $post_id, $parent ) );
 
         // If post exists, check if it has changed and proceed further
@@ -145,7 +144,7 @@ class GIW_Publisher{
             $skip_file = empty( $front_matter[ 'skip_file' ] ) ? '' : $front_matter[ 'skip_file' ];
             $taxonomy = $front_matter[ 'taxonomy' ];
             $custom_fields = $front_matter[ 'custom_fields' ];
-
+            $author = $front_matter[ 'author' ];
             $post_date = '';
             if( !empty( $front_matter[ 'post_date' ] ) ){
                 $post_date = GIW_Utils::process_date( $front_matter[ 'post_date' ] );
@@ -176,7 +175,7 @@ class GIW_Publisher{
             $skip_file = '';
             $taxonomy = array();
             $custom_fields = array();
-
+            $author = 'admin';
             $content = '';
             $sha = '';
             $github_url = '';
@@ -191,14 +190,15 @@ class GIW_Publisher{
             'sha' => $sha,
             'github_url' => $github_url
         ));
-
+        $mail_author = get_user_by_email($author);
+        GIW_Utils::log('Author of post is: ' . $mail_author->nickname . ' ID : ' . $mail_author->ID);
         $post_details = array(
             'ID' => $post_id,
             'post_title' => $post_title,
             'post_name' => $item_slug,
             'post_content' => $content,
             'post_type' => $this->post_type,
-            'post_author' => $this->post_author,
+            'post_author' => $mail_author->ID,
             'post_status' => $post_status,
             'post_excerpt' => $post_excerpt,
             'post_parent' => $parent,
