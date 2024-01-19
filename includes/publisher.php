@@ -144,7 +144,7 @@ class GIW_Publisher{
             $skip_file = empty( $front_matter[ 'skip_file' ] ) ? '' : $front_matter[ 'skip_file' ];
             $taxonomy = $front_matter[ 'taxonomy' ];
             $custom_fields = $front_matter[ 'custom_fields' ];
-            $author = $front_matter[ 'author' ];
+            $author_nickname = $front_matter[ 'author' ];
             $post_date = '';
             if( !empty( $front_matter[ 'post_date' ] ) ){
                 $post_date = GIW_Utils::process_date( $front_matter[ 'post_date' ] );
@@ -175,7 +175,7 @@ class GIW_Publisher{
             $skip_file = '';
             $taxonomy = array();
             $custom_fields = array();
-            $author = 'admin';
+            $author_nickname = 'admin';
             $content = '';
             $sha = '';
             $github_url = '';
@@ -190,15 +190,15 @@ class GIW_Publisher{
             'sha' => $sha,
             'github_url' => $github_url
         ));
-        $mail_author = get_user_by_email($author);
-        GIW_Utils::log('Author of post is: ' . $mail_author->nickname . ' ID : ' . $mail_author->ID);
+        $author = get_user_by('login', $author_nickname);
+        GIW_Utils::log('Author of post is: ' . $author->nickname . ' ID : ' . $author->ID);
         $post_details = array(
             'ID' => $post_id,
             'post_title' => $post_title,
             'post_name' => $item_slug,
             'post_content' => $content,
             'post_type' => $this->post_type,
-            'post_author' => $mail_author->ID,
+            'post_author' => $author->ID,
             'post_status' => $post_status,
             'post_excerpt' => $post_excerpt,
             'post_parent' => $parent,
