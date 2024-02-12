@@ -258,9 +258,10 @@ class GIW_Publisher{
 
     }
 
-    public function create_posts( $repo_structure, $parent){
+    public function create_posts( $repo_structure, $parent ){
 
         $existing_posts = $this->get_posts_by_parent( $parent );
+
         foreach( $repo_structure as $item_slug => $item_props ){
 
             GIW_Utils::log( 'At repository item - ' . $item_slug);
