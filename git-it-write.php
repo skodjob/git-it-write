@@ -2,10 +2,10 @@
 /*
 Plugin Name: Git it Write
 Plugin URI: https://www.aakashweb.com/wordpress-plugins/git-it-write/
-Description: Publish markdown files present in a Github repository as posts to WordPress automatically
-Author: Aakash Chakravarthy
+Description: Publish markdown files present in a Github repository as posts to WordPress automatically. Special Skodjob edition
+Author: Aakash Chakravarthy, Jiri Novotny
 Author URI: https://www.aakashweb.com/
-Version: 1.8
+Version: 1.9
 */
 
 define( 'GIW_VERSION', '1.8' );

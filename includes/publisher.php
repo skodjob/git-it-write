@@ -222,17 +222,23 @@ class GIW_Publisher{
             // Set the post taxonomy
             if( !empty( $taxonomy ) ){
                 foreach( $taxonomy as $tax_name => $terms ){
-                    GIW_Utils::log( 'Setting taxonomy [' . $tax_name . '] to post.' );
+                    GIW_Utils::log( 'Setting taxonomy [' . $tax_name . '-' . json_encode($terms) . '] to post.' );
                     if( !taxonomy_exists( $tax_name ) ){
                         GIW_Utils::log( 'Skipping taxonomy [' . $tax_name . '] - does not exist.' );
                         continue;
                     }
-
                     $set_tax = wp_set_object_terms( $new_post_id, $terms, $tax_name );
                     if( is_wp_error( $set_tax ) ){
                         GIW_Utils::log( 'Failed to set taxonomy [' . $set_tax->get_error_message() . ']' );
                     }
                 }
+            }
+            $category_name = $this->get_category_from_path($item_props["rel_url"]);
+            GIW_Utils::log( 'Setting taxonomy [category' . '-' . $category_name . '] to post.' );
+
+            $set_tax = wp_set_object_terms( $new_post_id, $category_name, "category", true );
+            if( is_wp_error( $set_tax ) ){
+                GIW_Utils::log( 'Failed to set taxonomy [' . $set_tax->get_error_message() . ']' );
             }
 
             if( $stick_post == 'yes' ){
@@ -529,6 +535,13 @@ class GIW_Publisher{
 
         return $end_result;
 
+    }
+
+    private function get_category_from_path( $path ) {
+        $split = explode( "/", $path );
+        end( $split );
+        $category = prev( $split );
+        return $category;
     }
 
 }
