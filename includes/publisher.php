@@ -221,28 +221,23 @@ class GIW_Publisher{
             // Set the post taxonomy
             if( !empty( $taxonomy ) ){
                 foreach( $taxonomy as $tax_name => $terms ){
-                    GIW_Utils::log( 'Setting taxonomy [' . $tax_name . '-' . $terms . '] to post.' );
+                    GIW_Utils::log( 'Setting taxonomy [' . $tax_name . '-' . json_encode($terms) . '] to post.' );
                     if( !taxonomy_exists( $tax_name ) ){
-                        GIW_Utils::log( 'Skipping taxonomy [' . $tax_name . '-' . $terms . '] - does not exist.' );
+                        GIW_Utils::log( 'Skipping taxonomy [' . $tax_name . '] - does not exist.' );
                         continue;
                     }
-
                     $set_tax = wp_set_object_terms( $new_post_id, $terms, $tax_name );
                     if( is_wp_error( $set_tax ) ){
                         GIW_Utils::log( 'Failed to set taxonomy [' . $set_tax->get_error_message() . ']' );
                     }
                 }
-            } else {
-                $category_name = $this->get_category_from_path($item_props["rel_url"]);
-                GIW_Utils::log( 'Setting taxonomy [category' . '-' . $category_name . '] to post.' );
-                if( !taxonomy_exists( "category" ) ){
-                    GIW_Utils::log( 'Skipping taxonomy [category' . '-' . $category_name .  '] - does not exist.' );
-                }
+            }
+            $category_name = $this->get_category_from_path($item_props["rel_url"]);
+            GIW_Utils::log( 'Setting taxonomy [category' . '-' . $category_name . '] to post.' );
 
-                $set_tax = wp_set_object_terms( $new_post_id, $category_name, "category" );
-                if( is_wp_error( $set_tax ) ){
-                    GIW_Utils::log( 'Failed to set taxonomy [' . $set_tax->get_error_message() . ']' );
-                }
+            $set_tax = wp_set_object_terms( $new_post_id, $category_name, "category", true );
+            if( is_wp_error( $set_tax ) ){
+                GIW_Utils::log( 'Failed to set taxonomy [' . $set_tax->get_error_message() . ']' );
             }
 
             if( $stick_post == 'yes' ){
@@ -266,9 +261,6 @@ class GIW_Publisher{
     public function create_posts( $repo_structure, $parent){
 
         $existing_posts = $this->get_posts_by_parent( $parent );
-        GIW_Utils::log( '------------------------------------');
-        GIW_Utils::log( 'Repo structure variable - ' . print_r($repo_structure));
-        GIW_Utils::log( '------------------------------------');
         foreach( $repo_structure as $item_slug => $item_props ){
 
             GIW_Utils::log( 'At repository item - ' . $item_slug);
@@ -543,12 +535,10 @@ class GIW_Publisher{
 
     }
 
-    private function get_category_from_path($path) {
-        GIW_Utils::log( 'File path for category - ' . $path );
-        $split = explode("/", $path);
-        end($split);
-        $category = prev($split);
-        GIW_Utils::log( 'Parsed category from  - ' . $category );
+    private function get_category_from_path( $path ) {
+        $split = explode( "/", $path );
+        end( $split );
+        $category = prev( $split );
         return $category;
     }
 
