@@ -233,7 +233,7 @@ class GIW_Publisher{
                     }
                 }
             } else {
-                $category_name = get_category($item_props["rel_url"]);
+                $category_name = $this->get_category_from_path($item_props["rel_url"]);
                 GIW_Utils::log( 'Setting taxonomy [category' . '-' . $category_name . '] to post.' );
                 if( !taxonomy_exists( "category" ) ){
                     GIW_Utils::log( 'Skipping taxonomy [category' . '-' . $category_name .  '] - does not exist.' );
@@ -543,10 +543,13 @@ class GIW_Publisher{
 
     }
 
-    private function get_category($path) {
+    private function get_category_from_path($path) {
+        GIW_Utils::log( 'File path for category - ' . $path );
         $split = explode("/", $path);
         end($split);
-        return prev($split);
+        $category = prev($split);
+        GIW_Utils::log( 'Parsed category from  - ' . $category );
+        return $category;
     }
 
 }
