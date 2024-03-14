@@ -130,10 +130,11 @@ class GIW_Publisher{
             $parsed_content = $this->parsedown->parse_content( $item_content );
 
             $front_matter = $parsed_content[ 'front_matter' ];
+            GIW_Utils::log( 'Parsing text' );
             $html = $this->parsedown->text( $parsed_content[ 'markdown' ] );
+            GIW_Utils::log( 'Done' );
             $content = GIW_Utils::process_content_template( $this->content_template, $html );
-            $content = preg_replace( '/[\r\n\t ]+/', ' ', $content );
-
+            $content = preg_replace( '~(?<!>)[\n]+~', ' ', $content );
             // Get post details
             $post_title = empty( $front_matter[ 'title' ] ) ? $item_slug : $front_matter[ 'title' ];
             $post_status = empty( $front_matter[ 'post_status' ] ) ? 'publish' : $front_matter[ 'post_status' ];

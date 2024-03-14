@@ -2,6 +2,7 @@
 
 if( ! defined( 'ABSPATH' ) ) exit;
 
+use Highlight\Highlighter;
 use Symfony\Component\Yaml\Yaml;
 
 class GIW_Parsedown extends ParsedownExtra{
@@ -21,10 +22,40 @@ class GIW_Parsedown extends ParsedownExtra{
         'skip_file' => ''
     );
 
+    protected $highlighter;
     public $uploaded_images = array();
 
     public function __construct () {
         $this->BlockTypes['!'][] = 'Figure'; // Add blockFigure support for lines starting with !
+        $this->highlighter = new Highlighter;
+    }
+
+    protected function blockFencedCodeComplete($block)
+    {
+        if (! isset($block['element']['element']['attributes'])) {
+            return $block;
+        }
+
+        $code = $block['element']['element']['text'];
+        $languageClass = $block['element']['element']['attributes']['class'];
+        $language = explode('-', $languageClass);
+
+        try {
+            $highlighted = $this->highlighter->highlight($language[1], $code);
+            $block['element']['element']['attributes']['class'] = vsprintf('%s hljs %s', [
+                $languageClass,
+                $highlighted->language,
+            ]);
+
+            $new_value = str_replace("\n", "<br>", $highlighted->value);
+            #$new_value = $this->replaceTrailingSpacesInCode($new_value);
+            $block['element']['element']['rawHtml'] = $new_value;
+            unset($block['element']['element']['text']);
+        } catch (DomainException $e) {
+            //
+        }
+
+        return $block;
     }
 
     // Parses the front matter and the markdown from the content
@@ -197,6 +228,19 @@ class GIW_Parsedown extends ParsedownExtra{
         return $FigureBlock;
     }
 
+    private function sortByLength($a,$b){
+        return strlen($b)-strlen($a);
+    }
+    private function replaceTrailingSpacesInCode($content) {
+        preg_match_all("~<br>\s+~", $content, $matches);
+        $arr = array_unique($matches[0]);
+        //usort($arr, 'sortByLength');
+        /*for ($i = 0; $i < count($arr); $i++) {
+            $new = str_replace(" ", "&nbsp;", $arr[$i]);
+            $content = str_replace($arr[$i], $new, $content);
+        }*/
+        return $content;
+    }
 }
 
 ?>
