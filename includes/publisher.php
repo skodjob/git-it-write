@@ -221,6 +221,14 @@ class GIW_Publisher{
             GIW_Utils::log( '---------- Published post: ' . $new_post_id . ' ----------' );
 
             // Set the post taxonomy
+            $category_name = $this->get_category_from_path($item_props["rel_url"]);
+            GIW_Utils::log( 'Setting taxonomy [category' . '-' . $category_name . '] to post.' );
+
+            $set_tax = wp_set_object_terms( $new_post_id, $category_name, "category",false );
+            if( is_wp_error( $set_tax ) ){
+                GIW_Utils::log( 'Failed to set taxonomy [' . $set_tax->get_error_message() . ']' );
+            }
+
             if( !empty( $taxonomy ) ){
                 foreach( $taxonomy as $tax_name => $terms ){
                     GIW_Utils::log( 'Setting taxonomy [' . $tax_name . '-' . json_encode($terms) . '] to post.' );
@@ -228,18 +236,11 @@ class GIW_Publisher{
                         GIW_Utils::log( 'Skipping taxonomy [' . $tax_name . '] - does not exist.' );
                         continue;
                     }
-                    $set_tax = wp_set_object_terms( $new_post_id, $terms, $tax_name );
+                    $set_tax = wp_set_object_terms( $new_post_id, $terms, $tax_name, true );
                     if( is_wp_error( $set_tax ) ){
                         GIW_Utils::log( 'Failed to set taxonomy [' . $set_tax->get_error_message() . ']' );
                     }
                 }
-            }
-            $category_name = $this->get_category_from_path($item_props["rel_url"]);
-            GIW_Utils::log( 'Setting taxonomy [category' . '-' . $category_name . '] to post.' );
-
-            $set_tax = wp_set_object_terms( $new_post_id, $category_name, "category", true );
-            if( is_wp_error( $set_tax ) ){
-                GIW_Utils::log( 'Failed to set taxonomy [' . $set_tax->get_error_message() . ']' );
             }
 
             if( $stick_post == 'yes' ){
